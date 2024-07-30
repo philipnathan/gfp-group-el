@@ -4,7 +4,7 @@ export default function ArticleDash() {
   return (
     <>
       <h1 className="flex items-center justify-center font-bold text-custom-green p-10">Article & Tips</h1>
-      <div className="bg-white min-h-screen p-10">
+      <div className="bg-white min-h-screen px-10">
 
 
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
