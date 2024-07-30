@@ -12,7 +12,8 @@ module.exports = {
         'custom-light-over-green': '#93bc3f',
         'custom-steel-blue' : '#4c8da8',
         'custom-Gunmetal' : '#242c34',
-        'custom-soft-blue' : '#74b3d4'
+        'custom-soft-blue' : '#74b3d4',
+        'custom-light-blue' : '#b4ccdc'
       },
       // backgroundImage:{
       //   'custom-backround': "url('/baground.png')",
