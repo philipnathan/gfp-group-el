@@ -1,26 +1,25 @@
 import Image from "next/image";
-import NavbarPage from "./pages/Dashboard/navbar"
-import HomeDashboard from "./pages/Dashboard/homedash";
-import FooterDash from "./pages/Dashboard/footer";
-import ArticleDash from "./pages/Dashboard/article";
+import NavbarPage from "./component/navbar";
+import HomeDashboard from "./component/homedash";
+import FooterDash from "./component/footer";
+import ArticleDash from "./component/article";
 import Head from "next/head";
-
 
 export default function Home() {
   return (
     <div>
       <Head>
         <title>PDC RYCYCLE</title>
-      <link 
-            rel='stylesheet'
-            href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
-            />
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+        />
       </Head>
-      <NavbarPage/>
+      <NavbarPage />
       <div className="pt-20">
-      <HomeDashboard/>
-      <ArticleDash/>
-      <FooterDash/>
+        <HomeDashboard />
+        <ArticleDash />
+        <FooterDash />
       </div>
     </div>
   );

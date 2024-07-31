@@ -1,5 +1,4 @@
 import Head from "next/head";
-import "../../../globals.css";
 import CatalogDashboard from "./content";
 
 export default function HomeDashboard() {
