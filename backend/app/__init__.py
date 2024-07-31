@@ -38,8 +38,8 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
+    login_manager.login_view = "users_blueprint.user_login"
     login_manager.init_app(app)
-    login_manager.login_view = "login"
 
     @login_manager.user_loader
     def load_user(user_id):
