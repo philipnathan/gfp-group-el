@@ -3,6 +3,7 @@ from enum import Enum
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, VARCHAR, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 from ..db import db
 
@@ -24,6 +25,10 @@ class Users(db.Model, UserMixin):
     is_active = Column(Integer, default=Is_Active_Status.ACTIVE.value, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    user_seller_vouchers = relationship("UserSellerVouchers", backref="user")
+    transactions = relationship("Transactions", backref="user")
+    addresses = relationship("Addresses", backref="user")
 
     def __init__(self, username, password, fullname, email, phone_number):
         self.username = username
