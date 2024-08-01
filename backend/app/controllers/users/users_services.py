@@ -79,8 +79,11 @@ class UserServices:
             return {"error": str(e)}, 500
 
     def user_logout(self):
-        logout_user()
-        return {"message": "User logged out successfully"}, 200
+        try:
+            logout_user()
+            return {"message": "User logged out successfully"}, 200
+        except Exception as e:
+            return {"error": str(e)}, 500
 
     def user_info(self, user_id):
         try:
