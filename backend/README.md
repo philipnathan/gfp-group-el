@@ -39,7 +39,13 @@ This README provides a comprehensive guide for setting up and running the backen
 
 ## How to run this API Services
 
-1. Go to backend folder and run this code on your terminal
+1. Go to backend folder and run this code on your terminal to add all locations to locations' table
+
+    ```
+    python location_data_import.py
+    ```
+
+2. Run this on your terminal to start app
 
     ```
     python run.py
