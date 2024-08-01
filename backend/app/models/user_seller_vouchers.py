@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 from ..db import db
 
 
-class User_Seller_Vouchers(db.Model):
+class UserSellerVouchers(db.Model):
     __tablename__ = "user_seller_vouchers"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

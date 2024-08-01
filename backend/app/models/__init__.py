@@ -6,7 +6,7 @@ from .shipments import Shipments
 from .sellers import Sellers
 from .shipping_options import ShippingOptions
 from .seller_vouchers import SellerVouchers
-from .user_seller_vouchers import User_Seller_Vouchers
+from .user_seller_vouchers import UserSellerVouchers
 from .payment_methods import PaymentMethods
 from .payment_details import PaymentDetails
 from .transactions import Transactions

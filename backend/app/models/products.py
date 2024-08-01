@@ -23,10 +23,10 @@ class Products(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(VARCHAR(255), nullable=False)
-    description = Column(Text)
+    description = Column(Text, nullable=True)
     price = Column(Integer, nullable=False)
-    weight = Column(SmallInteger, nullable=False)
-    volume = Column(SmallInteger, nullable=False)
+    weight_kg = Column(SmallInteger, nullable=False)
+    volume_m3 = Column(SmallInteger, nullable=False)
     stock = Column(SmallInteger, nullable=False)
     image_url = Column(VARCHAR(255), nullable=True)
     product_type = Column(Integer, default=Product_Type.standard.value, nullable=False)

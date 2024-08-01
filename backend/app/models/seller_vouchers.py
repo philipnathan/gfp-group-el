@@ -43,4 +43,4 @@ class SellerVouchers(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    seller_voucher_id = relationship("User_Seller_Vouchers", backref="seller_voucher")
+    seller_voucher_id = relationship("UserSellerVouchers", backref="seller_voucher")

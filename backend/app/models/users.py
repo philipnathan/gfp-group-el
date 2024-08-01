@@ -49,7 +49,6 @@ class Users(db.Model, UserMixin):
             "fullname": self.fullname,
             "email": self.email,
             "phone_number": self.phone_number,
-            "is_active": self.is_active.value,
         }
 
     def delete_user(self):

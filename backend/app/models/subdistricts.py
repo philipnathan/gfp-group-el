@@ -16,11 +16,11 @@ class Subdistricts(db.Model):
     arrival = relationship(
         "Shipments",
         foreign_keys="Shipments.arrival_sub_district",
-        backref="arrival_sub_district",
+        backref="arrival_sub_district_rel",
     )
     destination = relationship(
         "Shipments",
         foreign_keys="Shipments.destination_sub_district",
-        backref="destination_sub_district",
+        backref="destination_sub_district_rel",
     )
     sellers = relationship("Sellers", backref="subdistrict")
