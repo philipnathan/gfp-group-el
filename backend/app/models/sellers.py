@@ -29,6 +29,6 @@ class Sellers(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    shipping_options = relationship("ShippingOptions", backref="shipment")
+    shipping_options = relationship("ShippingOptions", backref="shipment_rel")
     seller_vouchers = relationship("SellerVouchers", backref="seller")
     transactions = relationship("Transactions", backref="seller")

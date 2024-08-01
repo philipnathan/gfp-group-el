@@ -8,10 +8,10 @@ from ..db import db
 class Locations(db.Model):
     __tablename__ = "locations"
 
-    id = Column(SmallInteger, primary_key=True, autoincrement=True)
-    province = Column(VARCHAR(30), unique=True, nullable=False)
-    district = Column(VARCHAR(30), unique=True, nullable=False)
-    subdistrict = Column(VARCHAR(30), unique=True, nullable=False)
+    id = Column(SmallInteger, primary_key=True)
+    province = Column(VARCHAR(100), unique=False, nullable=False)
+    district = Column(VARCHAR(100), unique=False, nullable=False)
+    subdistrict = Column(VARCHAR(100), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
