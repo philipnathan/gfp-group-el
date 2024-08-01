@@ -3,91 +3,94 @@ import Head from 'next/head';
 import Link from 'next/link';
 import React, { useState } from "react";
 
-
 export default function MenuNav() {
-    const [selectedOption, setSelectedOption] = useState<string>("");
+  const [selectedOptions, setSelectedOptions] = useState({
+    baby: "",
+    fashion: "",
+    jewellery: "",
+    footwear: "",
+    home: "",
+    gift: ""
+  });
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>, category: string) => {
     const selectedValue = event.target.value;
-    setSelectedOption(selectedValue);
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      [category]: selectedValue
+    }));
 
     if (selectedValue) {
       window.location.href = selectedValue;
     }
   };
+
   return (
     <>
-    <Head>
-      <title>Menu Section</title>
-    </Head>
-    <div className='text-custom-Olive-Drab'>
-         <Link href="#" className="p-2 border border-gray-300 rounded">
+      <Head>
+        <title>Menu Section</title>
+      </Head>
+      <div className='text-custom-Olive-Drab'>
+        <Link href="/" className="p-2 border border-gray-300 rounded">
           Home
         </Link>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.baby}
+          onChange={(e) => handleChange(e, 'baby')}
           className="p-2 border border-gray-300 rounded"
         >
-          <option value="">Baby, Child & Toys</option>
-          <option value="#">Toys & Gift</option>
+          <option value="">Baby & Kids</option>
+          <option value="/baby">Baby</option>
+          <option value="/toys">Toys</option>
         </select>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.fashion}
+          onChange={(e) => handleChange(e, 'fashion')}
           className="p-2 border border-gray-300 rounded"
         >
           <option value="">Fashion</option>
-          <option value="#">Accesoris</option>
-          <option value="#">Bags</option>
-          <option value="#">Coats & Jacket</option>
-          <option value="#">Dresses & Skirts</option>
-          <option value="#">Knitewear</option>
-          <option value="#">Tops</option>
+          <option value="/womens-clothing">Women</option>
+          <option value="/mens-clothing">Men</option>
+          <option value="/accessories">Accessories</option>
         </select>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.jewellery}
+          onChange={(e) => handleChange(e, 'jewellery')}
           className="p-2 border border-gray-300 rounded"
         >
-          <option value="">Jwellery & Watches</option>
-          <option value="#">Bracelets</option>
-          <option value="#">Earings</option>
-          <option value="#">Necklackes</option>
-          <option value="#">Rings</option>
-          <option value="#">Watches</option>
+          <option value="">Jewellery</option>
+          <option value="/earrings">Earrings</option>
+          <option value="/necklaces">Necklaces</option>
         </select>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.footwear}
+          onChange={(e) => handleChange(e, 'footwear')}
           className="p-2 border border-gray-300 rounded"
         >
           <option value="">Footwear</option>
-          <option value="#">Women</option>
-          <option value="#">Men</option>
+          <option value="/womens-shoes">Women</option>
+          <option value="/mens-shoes">Men</option>
         </select>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.home}
+          onChange={(e) => handleChange(e, 'home')}
           className="p-2 border border-gray-300 rounded"
         >
-          <option value="">Home & Garden</option>
-          <option value="#">Bed & Bath</option>
-          <option value="#">Garden & Outdoor</option>
-          <option value="#">Kitchen & Dining</option>
-          <option value="#">Living</option>
+          <option value="">Home & Living</option>
+          <option value="/home-decor">Home Decor</option>
         </select>
         <select
-          value={selectedOption}
-          onChange={handleChange}
+          value={selectedOptions.gift}
+          onChange={(e) => handleChange(e, 'gift')}
           className="p-2 border border-gray-300 rounded"
         >
-          <option value="">Gift Guide</option>
-          <option value="#">Fer Her</option>
-          <option value="#">For Him</option>
-          <option value="#">For Kids</option>
+          <option value="">Gifts & Collectibles</option>
+          <option value="/gifts">Gifts</option>
         </select>
-    </div>
+        <Link href="/about-us" className="p-2 border border-gray-300 rounded">
+          About Us
+        </Link>
+      </div>
     </>
   );
 }
