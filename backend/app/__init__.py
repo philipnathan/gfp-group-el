@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+from flasgger import Swagger
 
 from .db import db
 from .controllers.users import users_blueprint
@@ -37,8 +38,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    Swagger(app)
 
-    login_manager.login_view = "users_blueprint.user_login"
     login_manager.init_app(app)
 
     @login_manager.user_loader
