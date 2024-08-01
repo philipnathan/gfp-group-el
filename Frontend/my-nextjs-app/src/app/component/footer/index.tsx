@@ -1,5 +1,4 @@
 import Head from "next/head";
-import SosialMedia from "./sosialmedia";
 import Link from "next/link";
 
 export default function FooterDash() {
@@ -11,8 +10,7 @@ export default function FooterDash() {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
       </Head>
-      <div className="bg-white">
-        <SosialMedia />
+      <div className="bg-white pt-10">
         <div className="flex flex-col md:flex-row justify-between bg-custom-Gunmetal text-custom-light-blue p-10">
           <div className="flex">
             <div className="grid">
