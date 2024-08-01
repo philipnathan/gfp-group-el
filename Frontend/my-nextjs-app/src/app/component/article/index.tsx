@@ -1,10 +1,12 @@
+import SosialMedia from "./sosialmedia";
+
 export default function ArticleDash() {
   return (
     <>
       <h1 className="flex items-center justify-center font-bold text-custom-green p-10">
         Article & Tips
       </h1>
-      <div className="bg-white min-h-screen px-10">
+      <div className="bg-white px-10">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
           {/* Article 1 */}
           <div className="text-custom-steel-blue p-10 bg-custom-Gunmetal rounded-lg transition-transform duration-500 hover:scale-105">
@@ -55,6 +57,20 @@ export default function ArticleDash() {
             </button>
           </div>
         </div>
+        <div className="bg-white py-10 text-custom-steel-blue">
+  <div className="bg-custom-light-blue py-10">
+    <h2 className="p-10 text-center text-4xl">CREATE YOUR OWN SHOP</h2>
+    <div className="flex flex-col items-center justify-center">
+      <p className="text-center px-10 md:px-40 lg:px-80">
+        It’s as easy as 1,2,3 to open your own shop on Made From Recycled and start selling your products. It’s FREE to list, you’ll get your own bespoke shop page with loads of functionality, receive instant payments for your sales and pay one of the lowest fees on the market.
+      </p>
+      <button className="mt-5 bg-custom-Gunmetal p-5 border items-center rounded-lg hover:bg-custom-Gunmetal/80 hover:scale-105">
+        OPEN YOUR SHOP NOW
+      </button>
+    </div>
+  </div>
+</div>
+<SosialMedia/>
       </div>
     </>
   );
