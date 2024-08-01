@@ -5,11 +5,13 @@ from sqlalchemy.orm import relationship
 from ..db import db
 
 
-class Subdistricts(db.Model):
-    __tablename__ = "subdistricts"
+class Locations(db.Model):
+    __tablename__ = "locations"
 
     id = Column(SmallInteger, primary_key=True, autoincrement=True)
-    subdistrict_name = Column(VARCHAR(30), unique=True, nullable=False)
+    province = Column(VARCHAR(30), unique=True, nullable=False)
+    district = Column(VARCHAR(30), unique=True, nullable=False)
+    subdistrict = Column(VARCHAR(30), unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
