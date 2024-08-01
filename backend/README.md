@@ -19,6 +19,8 @@ This README provides a comprehensive guide for setting up and running the backen
 
 ## Flask Configuration
 
+### If
+
 1.  Go to backend folder and run this code on your terminal
 
     -   For windows user (This command will not return any response)
