@@ -10,11 +10,9 @@ class Shipments(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     vendor_name = Column(VARCHAR(30), nullable=False)
-    arrival_sub_district = Column(
-        SmallInteger, ForeignKey("locations.id"), nullable=False
-    )
-    destination_sub_district = Column(
-        SmallInteger, ForeignKey("locations.id"), nullable=False
+    arrival_subdistrict = Column(Integer, ForeignKey("subdistricts.id"), nullable=False)
+    destination_subdistrict = Column(
+        Integer, ForeignKey("subdistricts.id"), nullable=False
     )
     service_name = Column(VARCHAR(10), nullable=False)
     estimated_time = Column(SmallInteger, nullable=False)

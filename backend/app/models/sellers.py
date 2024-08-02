@@ -30,7 +30,7 @@ class Sellers(db.Model):
     store_name = Column(VARCHAR(30), unique=True, nullable=False)
     store_description = Column(TEXT, nullable=True)
     store_address = Column(TEXT, nullable=True)
-    store_subdistrict = Column(SmallInteger, ForeignKey("locations.id"), nullable=True)
+    store_subdistrict = Column(Integer, ForeignKey("subdistricts.id"), nullable=True)
     store_image_url = Column(VARCHAR(255), nullable=True)
     is_active = Column(
         SmallInteger, default=Is_Active_Status.ACTIVE.value, nullable=False
