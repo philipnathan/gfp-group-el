@@ -1,5 +1,4 @@
 from flask import request
-from flask_login import login_required
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flasgger import swag_from
 
@@ -24,7 +23,6 @@ def user_register():
 
 
 @users_blueprint.route("/logout", methods=["POST"])
-@login_required
 @swag_from("./user_logout.yml")
 def user_logout():
     return service.user_logout()

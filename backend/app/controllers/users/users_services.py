@@ -1,4 +1,3 @@
-from flask_login import login_user, logout_user, current_user
 from flask_jwt_extended import create_access_token
 
 from .users_repository import UserRepository
@@ -23,7 +22,6 @@ class UserServices:
             if user is None or not user.check_password(password):
                 raise ValueError("Invalid Email / Password")
 
-            login_user(user)
             access_token = create_access_token(identity={"id": user.id})
 
             return {"access_token": access_token}
@@ -80,16 +78,12 @@ class UserServices:
 
     def user_logout(self):
         try:
-            logout_user()
             return {"message": "User logged out successfully"}, 200
         except Exception as e:
             return {"error": str(e)}, 500
 
     def user_info(self, user_id):
         try:
-            if not current_user.is_authenticated:
-                raise ValueError("Please login first")
-
             user = self.repository.get_user_by_id(user_id)
 
             return {"user": user.to_dict()}
@@ -100,9 +94,6 @@ class UserServices:
 
     def user_edit(self, user_id, data):
         request_type = data.get("request_type")
-
-        if not current_user.is_authenticated:
-            raise ValueError("Please login first")
 
         if request_type == "change_email":
             return self.change_email(user_id, data)
