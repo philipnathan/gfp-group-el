@@ -8,6 +8,7 @@ from flasgger import Swagger
 
 from .db import db
 from .controllers.users import users_blueprint
+from .controllers.sellers import sellers_blueprint
 
 load_dotenv()
 migrate = Migrate()
@@ -32,6 +33,7 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
     app.register_blueprint(users_blueprint)
+    app.register_blueprint(sellers_blueprint)
 
     from .models import Users
 
