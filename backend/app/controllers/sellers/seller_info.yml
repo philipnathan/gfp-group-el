@@ -1,7 +1,7 @@
 tags:
-    - Users
-summary: Get current user information.
-description: Get current user information.
+    - Sellers
+summary: Get current seller information.
+description: Get current seller information.
 parameters:
     - in: header
       name: Authorization
@@ -20,18 +20,30 @@ responses:
                 user:
                     type: object
                     properties:
-                        username:
-                            type: string
-                            example: usernameofuser
-                        fullname:
-                            type: string
-                            example: fullnameofuser
+                        id:
+                            type: integer
+                            example: 1
                         email:
                             type: string
                             example: useremail@gmail.com
                         phone_number:
                             type: string
                             example: 6282122223333
+                        store_name:
+                            type: string
+                            example: Nathan shop
+                        store_description:
+                            type: string
+                            example: description
+                        store_address:
+                            type: string
+                            example: address
+                        store_subdistrict:
+                            type: integer
+                            example: 1
+                        store_image_url:
+                            type: string
+                            example: www.image.com
     401:
         description: UNAUTHORIZED
     500:

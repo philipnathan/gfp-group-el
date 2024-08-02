@@ -2,7 +2,7 @@ import json
 from app import create_app
 
 from app.db import db
-from app.models import Locations
+from app.models import Provinces, Districts, Subdistricts
 
 
 def read_json(filename):
@@ -10,23 +10,20 @@ def read_json(filename):
         return json.load(f)
 
 
-def import_data(data):
+def import_data(data, model):
     app = create_app()
 
     with app.app_context():
         try:
-            for location in data:
-                new_location = Locations(
-                    id=location["id"],
-                    province=location["province"],
-                    district=location["district"],
-                    subdistrict=location["subdistrict"],
-                )
-                db.session.add(new_location)
+            for key, value in data.items():
+                new_data = model(id=int(key), **value)
+                db.session.add(new_data)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             print(e)
 
 
-import_data(read_json("location_data.json"))
+import_data(read_json("province.json"), Provinces)
+import_data(read_json("district.json"), Districts)
+import_data(read_json("subdistrict.json"), Subdistricts)
