@@ -8,6 +8,7 @@ parameters:
       schema:
           type: string
           format: JWT
+          example: Bearer <JWT>
       description: JWT Token
       required: true
 responses:

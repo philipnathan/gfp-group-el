@@ -24,7 +24,7 @@ class UserServices:
                 raise ValueError("Invalid Email / Password")
 
             login_user(user)
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(identity={"id": user.id})
 
             return {"access_token": access_token}
 
@@ -50,7 +50,7 @@ class UserServices:
             is_username = self.repository.get_user_by_username(username)
             is_phone_number = self.repository.get_user_by_phone_number(phone_number)
 
-            if is_email.is_active == 0:
+            if is_email and is_email.is_active == 0:
                 raise ValueError("Please contact customer service")
             if is_email:
                 raise ValueError("Email already exists")
@@ -112,6 +112,9 @@ class UserServices:
 
     def user_delete(self, user_id, data):
         password = data.get("password")
+
+        if not password:
+            raise ValueError("Please fill all required fields")
 
         try:
             user = self.repository.get_user_by_id(user_id)
