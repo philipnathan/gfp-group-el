@@ -1,52 +1,73 @@
 'use client';
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+interface Location {
+  id: number;
+  province: string;
+}
 
 export default function FilterSearch() {
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleLocationClick(locationId: number) {
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/locations/search?dist_id=5101&subdist=510104&prov_id=${locationId}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch location details');
+      }
+      const data = await res.json();
+      console.log(data);
+      alert(JSON.stringify(data));
+    } catch (error) {
+      console.error('Error fetching location details:', error);
+      alert('Error loading location details');
+    }
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch('http://127.0.0.1:5000/api/locations/provinces');
+        if (!res.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await res.json();
+        setLocations(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Error loading data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <main>Loading...</main>;
+  }
+
+  if (error) {
+    return <main>{error}</main>;
+  }
+
   return (
     <>
       <div className="grid">
         <p className="px-10">FILTER</p>
-
-        {/* Location Filter */}
         <label className="px-10">Location</label>
         <div className="px-10 grid grid-cols-3 gap-1 md:grid-cols-6 lg:grid-cols-9 lg:text-xs">
-          {[
-            "JABODETABEK",
-            "DKI JAKARTA",
-            "JAKARTA TIMUR",
-            "JAKARTA BARAT",
-            "JAKARTA PUSAT",
-            "JAKARTA UTARA",
-            "JAKARTA SELATAN",
-            "BALI",
-            "BANGKA BELITUNG",
-            "JAWA TENGAH",
-            "DI.YOGYAKARTA",
-            "JAWA BARAT",
-            "KOTA BANDUNG",
-            "BEKASI",
-            "KAB.BEKASI",
-            "KAB.KARAWANG",
-            "KOTA.BOGOR",
-            "TANGERANG",
-            "KOTA.DEPOK",
-            "KOTA.CILEGON",
-            "JAWA TIMUR",
-            "KALIMANTAN SELATAN",
-            "KALIMANTAN TIMUR",
-            "JAMBI",
-            "GORONTALO",
-            "KEPULAUAN SERIBU",
-            "LAMPUNG",
-            "MALUKU",
-            "MALUKU UTARA",
-          ].map((location) => (
+          {locations.map((loc) => (
             <button
-              key={location}
+              key={loc.id}
               type="button"
               className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              onClick={() => handleLocationClick(loc.id)}
             >
-              {location}
+              {loc.province}
             </button>
           ))}
         </div>
@@ -126,7 +147,6 @@ export default function FilterSearch() {
         {/* Price Range */}
         <label className="px-10">PRICE</label>
         <div className="px-10 flex items-center space-x-2">
-          {/* Adjusted input and button styles */}
           <input
             type="number"
             placeholder="MIN"
@@ -152,4 +172,7 @@ export default function FilterSearch() {
       </div>
     </>
   );
+
+  // Fungsi untuk menangani klik tombol lokasi
+ 
 }
