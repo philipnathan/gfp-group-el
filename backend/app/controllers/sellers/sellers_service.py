@@ -31,7 +31,9 @@ class SellersServices:
             if not seller.check_password(password):
                 raise ValueError("Invalid email / password")
 
-            access_token = create_access_token(identity={"id": seller.id})
+            access_token = create_access_token(
+                identity={"id": seller.id, "role": "seller"}
+            )
 
             return {"access_token": access_token}, 200
 

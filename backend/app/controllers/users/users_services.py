@@ -22,7 +22,7 @@ class UserServices:
             if user is None or not user.check_password(password):
                 raise ValueError("Invalid Email / Password")
 
-            access_token = create_access_token(identity={"id": user.id})
+            access_token = create_access_token(identity={"id": user.id, "role": "user"})
 
             return {"access_token": access_token}
 
