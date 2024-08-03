@@ -5,10 +5,12 @@ import Image from "next/image";
 import SearchNav from "./searchbar";
 import MenuNav from "./menu";
 import Head from "next/head";
+import Link from "next/link";
+
 
 export default function NavbarPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false); // Tambahkan state ini
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleFilterMenu = () => setIsFilterMenuOpen(!isFilterMenuOpen);
@@ -41,9 +43,11 @@ export default function NavbarPage() {
               <button className="bg-custom-green text-white px-4 py-2 rounded hover:bg-custom-green/80 transition duration-300">
                 Login/Register
               </button>
-              <button className="bg-custom-green text-white px-4 py-2 rounded hover:bg-custom-green/80 transition duration-300">
-                <i className="fa fa-shopping-cart"></i>
-              </button>
+              <Link href="/cart">
+                <button className="bg-custom-green text-white px-4 py-2 rounded hover:bg-custom-green/80 transition duration-300">
+                  <i className="fa fa-shopping-cart"></i>
+                </button>
+              </Link>
             </div>
           )}
           <button
@@ -63,9 +67,11 @@ export default function NavbarPage() {
             <button className="w-full bg-custom-green text-white py-2 rounded mt-2 hover:bg-custom-green/80 transition duration-300">
               Login/Register
             </button>
-            <button className="w-full bg-custom-green text-white py-2 rounded mt-2 hover:bg-custom-green/80 transition duration-300">
-              <i className="fa fa-shopping-cart"></i> Cart
-            </button>
+            <Link href="/cart">
+              <button className="w-full bg-custom-green text-white py-2 rounded mt-2 hover:bg-custom-green/80 transition duration-300">
+                <i className="fa fa-shopping-cart"></i> Cart
+              </button>
+            </Link>
             <div className="grid justify-center">
               <MenuNav />
             </div>
