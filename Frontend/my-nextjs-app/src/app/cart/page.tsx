@@ -1,60 +1,238 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import NavbarPage from "../component/navbar";
 
-export default function ShoppingCart(){
-  const [quantity, setQuantity] = useState(1); // State untuk kuantitas produk
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  subtotal?: number;
+}
 
-  
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
+const initialProducts: Product[] = [
+  {
+    id: 1,
+    name: "Botol Yakult",
+    price: 10000,
+    image: "https://via.placeholder.com/70",
+  },
+  {
+    id: 2,
+    name: "Botol Susu",
+    price: 15000,
+    image: "https://via.placeholder.com/70",
+  },
+];
+
+export default function ShoppingCart() {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [quantities, setQuantities] = useState<Record<number, number>>(
+    initialProducts.reduce((acc, product) => {
+      acc[product.id] = 1;
+      return acc;
+    }, {} as Record<number, number>)
+  );
+  const [shippingMethod, setShippingMethod] = useState<string>("");
+
+  const increaseQuantity = (id: number) => {
+    setQuantities((prev) => ({ ...prev, [id]: prev[id] + 1 }));
   };
 
-  const decreaseQuantity = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1)); // Jangan biarkan kuantitas kurang dari 1
+  const decreaseQuantity = (id: number) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: prev[id] > 1 ? prev[id] - 1 : 1,
+    }));
   };
+
+  const handleQuantityChange = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      setQuantities((prev) => ({ ...prev, [id]: value }));
+    }
+  };
+
+  const calculateSubtotal = (price: number, quantity: number) => {
+    return price * quantity;
+  };
+
+  const handleShippingChange = (method: string) => {
+    setShippingMethod(method);
+  };
+
+  const removeProduct = (id: number) => {
+    setProducts((prev) => prev.filter((product) => product.id !== id));
+    setQuantities((prev) => {
+      const newQuantities = { ...prev };
+      delete newQuantities[id];
+      return newQuantities;
+    });
+  };
+
+  const totalSubtotal = products.reduce(
+    (acc, product) => acc + calculateSubtotal(product.price, quantities[product.id]),
+    0
+  );
+
   return (
     <>
-    <div>
-    <div><NavbarPage/></div>
-    <div className="grid pt-[45vh] p-10">
-      <h1 className="flex justify-center text-4xl">SHOPPING CART</h1>
-      <div className="flex justify-between">
-      <p>PRODUCT</p>
-      <div className="flex gap-10">
-      <p>PRICE</p>
-     <p>QUANTITY</p>
-     <p>SUBTOTAL</p>
-      </div>
-      </div>
-      <div className="flex justify-between">
-      <div className="flex gap-10">
-      <img src="https://via.placeholder.com/70"/>
-      <p className="mb-4 max-w-md">
-      Lorem ipsum dolor sit amet consectetur, adipisicing elit. A, quae? Laudantium est</p>
-      </div>
-      <div className="flex gap-10">
-        <p>RP.10.000</p>
-        <div>
-        <button
-        className="px-2 py-1 bg-gray-300 text-black mr-1"
-        onClick={decreaseQuantity}
-      >
-        -
-      </button>
-      <span className="px-2 py-1 border">{quantity}</span>
-      <button
-        className="px-2 py-1 bg-gray-300 text-black ml-1"
-        onClick={increaseQuantity}
-      >
-        +
-      </button>
+
+      <div>
+        <NavbarPage />
+        <div className="grid pt-[35vh]">
+          <h1 className="flex justify-center text-4xl">SHOPPING CART</h1>
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:p-10 p-5 ">
+            {/* Product Details */}
+            <div className="py-10">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="text-left">PRODUCT</th>
+                    <th className="text-left">PRICE</th>
+                    <th className="text-left">QUANTITY</th>
+                    <th className="text-left">SUBTOTAL</th>
+                    <th className="text-left">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.id}>
+                      <td className="py-1">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 items-center">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-16 h-16"
+                          />
+                          <span className="ml-0 md:ml-1 lg:ml-2">{product.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-2">
+                        RP.{product.price.toLocaleString("id-ID")}
+                      </td>
+                      <td className="py-2">
+                        <div className="flex items-center">
+                          <button
+                            className="px-2 py-1 bg-gray-300 text-black w-8 h-8 flex items-center justify-center"
+                            onClick={() => decreaseQuantity(product.id)}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            className="px-2 py-1 border w-16 h-8 text-center no-spinner"
+                            value={quantities[product.id]}
+                            onChange={(e) => handleQuantityChange(product.id, e)}
+                            min="1"
+                            step="1"
+                            onKeyDown={(e) => e.preventDefault()}
+                          />
+                          <button
+                            className="px-2 py-1 bg-gray-300 text-black w-8 h-8 flex items-center justify-center"
+                            onClick={() => increaseQuantity(product.id)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-2">
+                        RP.{calculateSubtotal(product.price, quantities[product.id]).toLocaleString("id-ID")}
+                      </td>
+                      <td className="py-2">
+                        <button
+                          onClick={() => removeProduct(product.id)}
+                          className="text-red-500"
+                        >
+                          <i className="fa fa-close"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Cart Totals */}
+            <div className="py-10">
+              <p className="text-lg font-semibold">CART TOTALS</p>
+              <table className="w-full border-collapse">
+                <tbody>
+                  <tr>
+                    <td className="py-2 text-left">SUBTOTAL</td>
+                    <td className="py-2 text-right">
+                      RP.{totalSubtotal.toLocaleString("id-ID")}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <form action="/action_page.php" className="mt-4">
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Email@example.com"
+                    className="border border-gray-300 rounded w-full"
+                  />
+                </div>
+                <div className="flex gap-2 mb-4">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="freeShipping"
+                      name="freeShipping"
+                      checked={shippingMethod === "freeShipping"}
+                      onChange={() => handleShippingChange("freeShipping")}
+                    />
+                    <label htmlFor="freeShipping"> Free Shipping</label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="localPickup"
+                      name="localPickup"
+                      checked={shippingMethod === "localPickup"}
+                      onChange={() => handleShippingChange("localPickup")}
+                    />
+                    <label htmlFor="localPickup"> Local Pickup</label>
+                  </div>
+                </div>
+                <div className="grid gap-2 mb-4">
+                  <label htmlFor="coupon">Coupon</label>
+                  <input
+                    type="text"
+                    name="coupon"
+                    className="border border-gray-300 rounded w-full"
+                  />
+                  <button className="px-2 py-2 bg-gray-500 text-black rounded w-full">
+                    Apply coupon
+                  </button>
+                </div>
+                <div className="mb-4">
+                  <p>PAYMENT METHOD</p>
+                  <div className="flex gap-2">
+                    {["TRANSFER", "COD", "PAYLATER", "PDCPAY"].map((payment) => (
+                      <button
+                        key={payment}
+                        type="button"
+                        className="flex border p-2 text-white bg-custom-green hover:bg-custom-green/80 text-xs"
+                      >
+                        {payment}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <input
+                    type="submit"
+                    value="PROCESS TO CHECKOUT"
+                    className="px-2 py-2 bg-blue-500 text-white rounded w-full"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <p></p>
       </div>
-      </div>
-    </div>
-    </div>
     </>
-  )
+  );
 }
