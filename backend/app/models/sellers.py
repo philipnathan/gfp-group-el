@@ -39,8 +39,9 @@ class Sellers(db.Model):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     shipping_options = relationship("ShippingOptions", backref="shipment_rel")
-    seller_vouchers = relationship("SellerVouchers", backref="seller")
-    transactions = relationship("Transactions", backref="seller")
+    seller_vouchers = relationship("SellerVouchers", backref="seller_voucher_rel")
+    transactions = relationship("Transactions", backref="transaction_rel")
+    products = relationship("Products", backref="product_rel")
 
     def __init__(self, email, password, phone_number, store_name):
         self.email = email

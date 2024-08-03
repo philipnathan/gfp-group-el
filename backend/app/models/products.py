@@ -8,14 +8,15 @@ from sqlalchemy import (
     SmallInteger,
     ForeignKey,
     DateTime,
+    Float,
 )
 
 from app.db import db
 
 
 class Product_Type(Enum):
-    standard = 0
-    premium = 1
+    STANDARD = 0
+    PREMIUM = 1
 
 
 class Products(db.Model):
@@ -25,12 +26,14 @@ class Products(db.Model):
     name = Column(VARCHAR(255), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Integer, nullable=False)
-    weight_kg = Column(SmallInteger, nullable=False)
-    volume_m3 = Column(SmallInteger, nullable=False)
+    weight_kg = Column(Float(5, 2), nullable=False)
+    volume_m3 = Column(Float(5, 2), nullable=False)
     stock = Column(SmallInteger, nullable=False)
     image_url = Column(VARCHAR(255), nullable=True)
-    product_type = Column(Integer, default=Product_Type.standard.value, nullable=False)
+    product_type = Column(Integer, nullable=False)
     category_id = Column(SmallInteger, ForeignKey("categories.id"), nullable=False)
+    seller_id = Column(Integer, ForeignKey("sellers.id"), nullable=False)
+    is_active = Column(SmallInteger, default=1, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -39,33 +42,36 @@ class Products(db.Model):
         name,
         description,
         price,
-        weight,
-        volume,
+        weight_kg,
+        volume_m3,
         stock,
         image_url,
         product_type,
         category_id,
+        seller_id,
     ):
         self.name = name
         self.description = description
         self.price = price
-        self.weight = weight
-        self.volume = volume
+        self.weight_kg = weight_kg
+        self.volume_m3 = volume_m3
         self.stock = stock
         self.image_url = image_url
         self.product_type = product_type
         self.category_id = category_id
+        self.seller_id = seller_id
 
     def to_dict(self):
         return {
+            "id": self.id,
             "name": self.name,
             "description": self.description,
             "price": self.price,
-            "weight": self.weight,
-            "volume": self.volume,
+            "weight_kg": self.weight_kg,
+            "volume_m3": self.volume_m3,
             "stock": self.stock,
             "image_url": self.image_url,
-            "product_type": self.product_type.value,
+            "product_type": self.product_type,
             "category_id": self.category_id,
         }
 
