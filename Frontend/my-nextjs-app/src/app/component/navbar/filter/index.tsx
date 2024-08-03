@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 
 interface Location {
@@ -11,33 +11,21 @@ export default function FilterSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleLocationClick(locationId: number) {
-    try {
-      const res = await fetch(`http://127.0.0.1:5000/api/locations/search?dist_id=5101&subdist=510104&prov_id=${locationId}`);
-      if (!res.ok) {
-        throw new Error('Failed to fetch location details');
-      }
-      const data = await res.json();
-      console.log(data);
-      alert(JSON.stringify(data));
-    } catch (error) {
-      console.error('Error fetching location details:', error);
-      alert('Error loading location details');
-    }
-  }
-
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('http://127.0.0.1:5000/api/locations/provinces');
+        const res = await fetch(
+          "http://127.0.0.1:5000/api/locations/provinces"
+        );
+        console.log(res);
         if (!res.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         const data = await res.json();
         setLocations(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Error loading data');
+        console.error("Error fetching data:", error);
+        setError("Error loading data");
       } finally {
         setLoading(false);
       }
@@ -64,8 +52,7 @@ export default function FilterSearch() {
             <button
               key={loc.id}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
-              onClick={() => handleLocationClick(loc.id)}
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {loc.province}
             </button>
@@ -79,7 +66,7 @@ export default function FilterSearch() {
             <button
               key={type}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {type}
             </button>
@@ -93,7 +80,7 @@ export default function FilterSearch() {
             <button
               key={method}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {method}
             </button>
@@ -116,7 +103,7 @@ export default function FilterSearch() {
             <button
               key={option}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {option}
             </button>
@@ -137,7 +124,7 @@ export default function FilterSearch() {
             <button
               key={promo}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {promo}
             </button>
@@ -163,7 +150,7 @@ export default function FilterSearch() {
             <button
               key={range}
               type="button"
-              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green text-xs"
+              className="search-button text-custom-green border border-custom-green p-1 bg-custom-pastel-green hover:bg-custom-pastel-green/80 text-xs"
             >
               {range}
             </button>
@@ -172,7 +159,4 @@ export default function FilterSearch() {
       </div>
     </>
   );
-
-  // Fungsi untuk menangani klik tombol lokasi
- 
 }
