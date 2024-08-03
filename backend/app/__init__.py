@@ -5,10 +5,14 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 from flasgger import Swagger
 
+from flask_cors import CORS
+
 from .db import db
 from .controllers.users import users_blueprint
 from .controllers.sellers import sellers_blueprint
 from .controllers.locations import locations_blueprint
+
+
 
 load_dotenv()
 migrate = Migrate()
@@ -39,6 +43,8 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
     Swagger(app)
+
+    CORS(app)
 
     with app.app_context():
         db.create_all()
