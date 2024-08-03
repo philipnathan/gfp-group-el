@@ -4,11 +4,13 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 from flasgger import Swagger
+from flask_cors import CORS
 
 from .db import db
 from .controllers.users import users_blueprint
 from .controllers.sellers import sellers_blueprint
 from .controllers.locations import locations_blueprint
+from .controllers.products import products_blueprint
 
 load_dotenv()
 migrate = Migrate()
@@ -34,11 +36,13 @@ def create_app():
     app.register_blueprint(users_blueprint)
     app.register_blueprint(sellers_blueprint)
     app.register_blueprint(locations_blueprint)
+    app.register_blueprint(products_blueprint)
 
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     Swagger(app)
+    CORS(app)
 
     with app.app_context():
         db.create_all()
