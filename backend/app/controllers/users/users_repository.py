@@ -19,13 +19,7 @@ class UserRepository:
     def get_user_by_id(self, id):
         return self.user.query.filter_by(id=id).first()
 
-    def user_register(self, username, fullname, email, phone_number, password):
-        new_user = self.user(
-            username=username,
-            fullname=fullname,
-            email=email,
-            phone_number=phone_number,
-            password=password,
-        )
+    def user_register(self, data):
+        new_user = self.user(**data)
 
         return new_user

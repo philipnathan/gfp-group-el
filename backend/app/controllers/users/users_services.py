@@ -2,6 +2,7 @@ from flask_jwt_extended import create_access_token
 
 from .users_repository import UserRepository
 from app.db import db
+from ..common import is_filled, get_data_and_validate
 
 
 class UserServices:
@@ -10,16 +11,18 @@ class UserServices:
         self.db = db
 
     def user_login(self, data):
-        email = data.get("email")
-        password = data.get("password")
-
         try:
-            user = self.repository.get_user_by_email(email)
+            user_data = get_data_and_validate(data, **{"email": str, "password": str})
+
+            if not is_filled(**user_data):
+                raise ValueError("Please fill all required fields")
+
+            user = self.repository.get_user_by_email(user_data["email"])
 
             if user.is_active == 0:
                 raise ValueError("Account is Inactive. Please contact customer service")
 
-            if user is None or not user.check_password(password):
+            if user is None or not user.check_password(user_data["password"]):
                 raise ValueError("Invalid Email / Password")
 
             access_token = create_access_token(identity={"id": user.id, "role": "user"})
@@ -32,21 +35,26 @@ class UserServices:
             return {"error": str(e)}, 500
 
     def user_register(self, data):
-        username = data.get("username")
-        fullname = data.get("fullname")
-        email = data.get("email")
-        phone_number = data.get("phone_number")
-        password = data.get("password")
-        all_data = [username, fullname, email, phone_number, password]
-
         try:
-            for data in all_data:
-                if data is None:
-                    raise ValueError("Please fill all required fields")
+            user_data = get_data_and_validate(
+                data,
+                **{
+                    "username": str,
+                    "fullname": str,
+                    "email": str,
+                    "phone_number": str,
+                    "password": str,
+                },
+            )
 
-            is_email = self.repository.get_user_by_email(email)
-            is_username = self.repository.get_user_by_username(username)
-            is_phone_number = self.repository.get_user_by_phone_number(phone_number)
+            if not is_filled(**user_data):
+                raise ValueError("Please fill all required fields")
+
+            is_email = self.repository.get_user_by_email(user_data["email"])
+            is_username = self.repository.get_user_by_username(user_data["username"])
+            is_phone_number = self.repository.get_user_by_phone_number(
+                user_data["phone_number"]
+            )
 
             if is_email and is_email.is_active == 0:
                 raise ValueError("Please contact customer service")
@@ -57,13 +65,7 @@ class UserServices:
             if is_phone_number:
                 raise ValueError("Phone number already exists")
 
-            user = self.repository.user_register(
-                username=username,
-                fullname=fullname,
-                email=email,
-                phone_number=phone_number,
-                password=password,
-            )
+            user = self.repository.user_register(user_data)
 
             self.db.session.add(user)
             self.db.session.commit()
@@ -101,16 +103,19 @@ class UserServices:
         if request_type == "change_password":
             return self.change_password(user_id, data)
 
+        if request_type == "change_phone_number":
+            return self.change_phone_number(user_id, data)
+
     def user_delete(self, user_id, data):
-        password = data.get("password")
-
-        if not password:
-            raise ValueError("Please fill all required fields")
-
         try:
+            password = get_data_and_validate(data, password=str)
+
+            if not is_filled(**password):
+                raise ValueError("Please fill all required fields")
+
             user = self.repository.get_user_by_id(user_id)
 
-            if not user.check_password(password):
+            if not user.check_password(password["password"]):
                 raise ValueError("Incorrect password")
 
             user.delete_user()
@@ -126,22 +131,27 @@ class UserServices:
             return {"error": str(e)}, 500
 
     def change_email(self, user_id, data):
-        new_email = data.get("new_email")
-        password = data.get("password")
-
-        if not new_email or not password:
-            raise ValueError("Please fill all required fields")
-
         try:
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "new_email": str,
+                    "password": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
+                raise ValueError("Please fill all required fields")
+
             user = self.repository.get_user_by_id(user_id)
 
-            if self.repository.get_user_by_email(new_email):
+            if self.repository.get_user_by_email(edit_data["new_email"]):
                 raise ValueError("Email already exists")
 
-            if not user.check_password(password):
+            if not user.check_password(edit_data["password"]):
                 raise ValueError("Incorrect password")
 
-            user.email = new_email
+            user.email = edit_data["new_email"]
             self.db.session.commit()
 
             return {"message": "Email changed successfully"}, 200
@@ -154,22 +164,60 @@ class UserServices:
             return {"error": str(e)}, 500
 
     def change_password(self, user_id, data):
-        password = data.get("password")
-        new_password = data.get("new_password")
-
-        if not password or not new_password:
-            raise ValueError("Please fill all required fields")
-
         try:
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "password": str,
+                    "new_password": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
+                raise ValueError("Please fill all required fields")
+
             user = self.repository.get_user_by_id(user_id)
 
-            if not user.check_password(password):
+            if not user.check_password(edit_data["password"]):
                 raise ValueError("Incorrect password")
 
-            user.password = user.set_password(new_password)
+            user.password = user.set_password(edit_data["new_password"])
             self.db.session.commit()
 
             return {"message": "Password changed successfully"}, 200
+
+        except ValueError as e:
+            self.db.session.rollback()
+            return {"error": str(e)}, 400
+        except Exception as e:
+            self.db.session.rollback()
+            return {"error": str(e)}, 500
+
+    def change_phone_number(self, user_id, data):
+        try:
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "password": str,
+                    "new_phone_number": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
+                raise ValueError("Please fill all required fields")
+
+            if self.repository.get_user_by_phone_number(edit_data["new_phone_number"]):
+                raise ValueError("Phone number already use")
+
+            user = self.repository.get_user_by_id(user_id)
+
+            if not user.check_password(edit_data["password"]):
+                raise ValueError("Incorrect password")
+
+            user.phone_number = edit_data["new_phone_number"]
+            self.db.session.commit()
+
+            return {"message": "Phone number changed successfully"}, 200
 
         except ValueError as e:
             self.db.session.rollback()

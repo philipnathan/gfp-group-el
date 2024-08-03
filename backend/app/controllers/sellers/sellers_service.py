@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token
 from .sellers_repository import SellersRepository
 from ..locations.locations_repository import LocationRepository
 from app.db import db
-from ..common import is_filled
+from ..common import is_filled, get_data_and_validate
 
 
 class SellersServices:
@@ -13,14 +13,13 @@ class SellersServices:
         self.db = db
 
     def seller_login(self, data):
-        email = data.get("email")
-        password = data.get("password")
-
         try:
-            if not is_filled(email, password):
+            seller_data = get_data_and_validate(data, email=str, password=str)
+
+            if not is_filled(**seller_data):
                 raise ValueError("Please fill all required fields")
 
-            seller = self.repository.get_seller_by_email(email)
+            seller = self.repository.get_seller_by_email(seller_data["email"])
 
             if not seller:
                 raise ValueError("Invalid email / password")
@@ -28,7 +27,7 @@ class SellersServices:
             if seller.is_active == 0:
                 raise ValueError("Account is Inactive. Please contact customer service")
 
-            if not seller.check_password(password):
+            if not seller.check_password(seller_data["password"]):
                 raise ValueError("Invalid email / password")
 
             access_token = create_access_token(
@@ -43,25 +42,27 @@ class SellersServices:
             return {"error": str(e)}, 500
 
     def seller_register(self, data):
-        email = data.get("email")
-        phone_number = data.get("phone_number")
-        store_name = data.get("store_name")
-        password = data.get("password")
-
         try:
-            if not is_filled(email, phone_number, store_name, password):
+            new_seller_data = get_data_and_validate(
+                data,
+                **{
+                    "email": str,
+                    "phone_number": str,
+                    "store_name": str,
+                    "password": str,
+                },
+            )
+
+            if not is_filled(**new_seller_data):
                 raise ValueError("Please fill all required fields")
 
             self.if_exist_raise_error(
-                email=email, phone_number=phone_number, store_name=store_name
+                email=new_seller_data["email"],
+                phone_number=new_seller_data["phone_number"],
+                store_name=new_seller_data["store_name"],
             )
 
-            new_seller = self.repository.seller_register(
-                email=email,
-                phone_number=phone_number,
-                store_name=store_name,
-                password=password,
-            )
+            new_seller = self.repository.seller_register(new_seller_data)
 
             self.db.session.add(new_seller)
             self.db.session.commit()
@@ -107,13 +108,16 @@ class SellersServices:
             return self.change_phone_number(seller_id, data)
 
     def seller_edit_business(self, seller_id, data):
-        all_data = {
-            "store_name": data.get("store_name"),
-            "store_description": data.get("store_description"),
-            "store_address": data.get("store_address"),
-            "store_subdistrict": data.get("store_subdistrict"),
-            "store_image_url": data.get("store_image_url"),
-        }
+        all_data = get_data_and_validate(
+            data,
+            **{
+                "store_name": str,
+                "store_description": str,
+                "store_address": str,
+                "store_subdistrict": int,
+                "store_image_url": str,
+            },
+        )
 
         try:
             seller = self.repository.get_seller_by_id(seller_id)
@@ -157,7 +161,7 @@ class SellersServices:
         password = data.get("password")
 
         try:
-            if not is_filled(password):
+            if not is_filled(password=password):
                 raise ValueError("Please input your password")
 
             seller = self.repository.get_seller_by_id(seller_id)
@@ -184,18 +188,26 @@ class SellersServices:
             return {"error": str(e)}, 500
 
     def change_email(self, seller_id, data):
-        new_email = data.get("new_email")
-        password = data.get("password")
-
         try:
-            if not is_filled(new_email, password):
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "new_email": str,
+                    "password": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
                 raise ValueError("Please fill all required fields")
 
             seller = self.change_personal_checker(
-                seller_id, password, "email", new_email
+                seller_id=seller_id,
+                key="email",
+                password=edit_data["password"],
+                new_data=edit_data["new_email"],
             )
 
-            seller.email = new_email
+            seller.email = edit_data["new_email"]
             self.db.session.commit()
 
             return {"message": "Email changed successfully"}, 200
@@ -208,18 +220,27 @@ class SellersServices:
             return {"error": str(e)}, 500
 
     def change_password(self, seller_id, data):
-        password = data.get("password")
-        new_password = data.get("new_password")
 
         try:
-            if not is_filled(password, new_password):
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "password": str,
+                    "new_password": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
                 raise ValueError("Please fill all required fields")
 
             seller = self.change_personal_checker(
-                seller_id, password, "password", new_password
+                seller_id=seller_id,
+                key="password",
+                password=edit_data["password"],
+                new_data=edit_data["new_password"],
             )
 
-            seller.password = seller.set_password(new_password)
+            seller.password = seller.set_password(edit_data["new_password"])
             self.db.session.commit()
 
             return {"message": "Password changed successfully"}, 200
@@ -232,18 +253,26 @@ class SellersServices:
             return {"error": str(e)}, 500
 
     def change_phone_number(self, seller_id, data):
-        password = data.get("password")
-        new_phone_number = data.get("new_phone_number")
-
         try:
-            if not is_filled(password, new_phone_number):
+            edit_data = get_data_and_validate(
+                data,
+                **{
+                    "password": str,
+                    "new_phone_number": str,
+                },
+            )
+
+            if not is_filled(**edit_data):
                 raise ValueError("Please fill all required fields")
 
             seller = self.change_personal_checker(
-                seller_id, password, "phone_number", new_phone_number
+                seller_id=seller_id,
+                key="phone_number",
+                password=edit_data["password"],
+                new_data=edit_data["new_phone_number"],
             )
 
-            seller.phone_number = new_phone_number
+            seller.phone_number = edit_data["new_phone_number"]
             self.db.session.commit()
 
             return {"message": "Phone number changed successfully"}, 200
@@ -263,7 +292,9 @@ class SellersServices:
                 raise ValueError("Seller not found")
             if not seller.check_password(password):
                 raise ValueError("Incorrect password")
-            if key != "password" and self.if_exist_raise_error(key, new_data):
+
+            data = {key: new_data}
+            if key != "password" and self.if_exist_raise_error(**data):
                 raise ValueError(f"{key} already used")
 
             return seller
