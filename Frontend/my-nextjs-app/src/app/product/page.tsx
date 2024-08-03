@@ -1,96 +1,68 @@
-'use client'
-import { useState } from "react";
+// src/app/product/page.tsx
+"use client";
+
+import React, { useEffect, useState } from "react";
 import NavbarPage from "../component/navbar";
 import FooterDash from "../component/footer";
 
+interface Product {
+  image_url: string;
+  is_active: number;
+  name: string;
+  price: number;
+}
 
-export default function DetailProduct() {
-  const images = [
-    { id: 1, src: "https://via.placeholder.com/400", alt: "PRODUCT 1", bgColor: "bg-green-500" },
-    { id: 2, src: "https://via.placeholder.com/400", alt: "PRODUCT 2", bgColor: "bg-yellow-500" },
-    { id: 3, src: "https://via.placeholder.com/400", alt: "PRODUCT 3", bgColor: "bg-red-500" },
-    { id: 4, src: "https://via.placeholder.com/400", alt: "PRODUCT 4", bgColor: "bg-blue-500" },
-    { id: 5, src: "https://via.placeholder.com/400", alt: "PRODUCT 5", bgColor: "bg-gray-500" },
-    { id: 6, src: "https://via.placeholder.com/400", alt: "PRODUCT 6", bgColor: "bg-purple-500" }
-  ];
+export default function ProductPage() {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [quantity, setQuantity] = useState(1); // State untuk kuantitas produk
+  useEffect(() => {
+    async function fetchAllProducts() {
+      try {
+        const res = await fetch('http://127.0.0.1:5000/api/products/user');
+        console.log(res)
+        if (!res.ok) {
+          throw new Error('Failed to fetch All Products');
+        }
+        const data = await res.json();
+        setAllProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setError('Error loading products');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAllProducts();
+  }, []);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
+  if (loading) {
+    return <main>Loading...</main>;
+  }
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decreaseQuantity = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1)); // Jangan biarkan kuantitas kurang dari 1
-  };
+  if (error) {
+    return <main>{error}</main>;
+  }
 
   return (
     <>
-    <NavbarPage/>
-    <div className="pt-[45vh]">
-      <div className="flex justify-center gap-10">
-        <div className="relative">
-          <div className={`flex justify-center overflow-hidden p-10 ${images[currentSlide].bgColor}`}>
-            <img
-              src={images[currentSlide].src}
-              alt={images[currentSlide].alt}
-              className="object-cover"
-              style={{ width: '400px', height: '400px' }}
-            />
-          </div>
-          <a
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 px-3 py-2 bg-black text-white cursor-pointer z-10"
-            onClick={prevSlide}
-          >
-            &#10094;
-          </a>
-          <a
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 px-3 py-2 bg-black text-white cursor-pointer z-10"
-            onClick={nextSlide}
-          >
-            &#10095;
-          </a>
-        </div>
-        <div className="flex flex-col font-sans">
-          <h1 className="text-3xl mb-4 font-bold">Nama Productnya apa</h1>
-          <p className="mb-4 max-w-md">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. A, quae? Laudantium est</p>
-          <p className="mb-4">In Stock</p>
-          <div className="flex items-center mb-4">
-            <button
-              className="px-4 py-2 bg-gray-300 text-black mr-2"
-              onClick={decreaseQuantity}
-            >
-              -
-            </button>
-            <span className="px-4 py-2 border">{quantity}</span>
-            <button
-              className="px-4 py-2 bg-gray-300 text-black ml-2"
-              onClick={increaseQuantity}
-            >
-              +
-            </button>
-          </div>
-          <div>
-          <button className="px-6 bg-blue-500 text-white rounded">Add to Cart</button>
-          </div>
-          <div className="pt-4 max-w-md">
-          <p>Deskripsi: Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quia officia hic atque tenetur, nemo ipsam, laborum accusantium deserunt non sapiente, voluptatibus iusto veritatis laudantium est voluptatem magni perspiciatis corrupti at.
-          </p>
+      <NavbarPage />
+      <div className="grid pt-[25vh] md:pt-[38vh] lg:pt-[35vh]">
+        <div className="p-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-6">
+            {allProducts.map((product) => (
+              <div key={product.name} className="bg-white shadow-md rounded-lg overflow-hidden transition-transform duration-500 hover:scale-105">
+                <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <h2 className="text-lg font-bold mb-2">{product.name}</h2>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </div>
-    <FooterDash/>
+      <FooterDash />
     </>
   );
 }

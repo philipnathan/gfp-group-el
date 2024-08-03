@@ -18,9 +18,10 @@ module.exports = {
         'custom-light-blue' : '#b4ccdc',
        
       },
-      // backgroundImage:{
-      //   'custom-backround': "url('/baground.png')",
-      // }
+      backgroundImage:{
+        'custom-backround-satu': "url('/bgsatu.jpg')",
+        'custom-backround-dua': "url('/bgdua.jpg')",
+      }
     },
     
   },

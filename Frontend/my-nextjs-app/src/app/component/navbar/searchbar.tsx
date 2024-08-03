@@ -2,16 +2,24 @@
 import React, { FormEvent, useState } from "react";
 import FilterSearch from "./filter";
 
+
 interface SearchNavProps {
   isFilterMenuOpen: boolean;
   toggleFilterMenu: () => void;
 }
 
 export default function SearchNav({ isFilterMenuOpen, toggleFilterMenu }: SearchNavProps) {
+  const [filters, setFilters] = useState<{ locationId: number | null }>({ locationId: null });
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const searchValue = (e.target as HTMLFormElement).search.value;
     console.log("Searching for:", searchValue);
+    console.log("With filters:", filters);
+  };
+
+  const handleFilterChange = (newFilters: { locationId: number | null }) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -36,7 +44,7 @@ export default function SearchNav({ isFilterMenuOpen, toggleFilterMenu }: Search
       </form>
       {isFilterMenuOpen && (
         <div className="flex flex-col items-center space-x-4 mt-4 overflow-y-auto max-h-64">
-          <FilterSearch />
+          <FilterSearch onFilterChange={handleFilterChange} />
         </div>
       )}
     </div>

@@ -1,11 +1,12 @@
 import Image from "next/image";
 import NavbarPage from "./component/navbar";
-import HomeDashboard from "./component/homedash";
 import FooterDash from "./component/footer";
 import ArticleDash from "./component/article";
+import HomePage from "./component/homedash";
 import Head from "next/head";
 
-export default function Home() {
+
+export default function MainPage() {
   return (
     <div>
       <Head>
@@ -17,7 +18,7 @@ export default function Home() {
       </Head>
       <NavbarPage />
       <div className="pt-20">
-        <HomeDashboard />
+        <HomePage />
         <ArticleDash />
         <FooterDash />
       </div>
