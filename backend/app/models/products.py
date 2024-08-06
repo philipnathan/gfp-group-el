@@ -10,8 +10,10 @@ from sqlalchemy import (
     DateTime,
     Float,
 )
+from sqlalchemy.orm import relationship
 
 from app.db import db
+from .reviews import Reviews
 
 
 class Product_Type(Enum):
@@ -34,8 +36,11 @@ class Products(db.Model):
     category_id = Column(SmallInteger, ForeignKey("categories.id"), nullable=False)
     seller_id = Column(Integer, ForeignKey("sellers.id"), nullable=False)
     is_active = Column(SmallInteger, default=1, nullable=False)
+    sold_qty = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    reviews = relationship("Reviews", backref="product_reviews")
 
     def __init__(
         self,
@@ -62,6 +67,15 @@ class Products(db.Model):
         self.seller_id = seller_id
 
     def to_dict(self):
+        all_reviews = self.reviews
+        reviews = [review.to_dict() for review in all_reviews]
+
+        avg_rating = (
+            db.session.query(func.avg(Reviews.rating))
+            .filter(Reviews.product_id == self.id)
+            .scalar()
+        )
+
         return {
             "id": self.id,
             "name": self.name,
@@ -73,7 +87,22 @@ class Products(db.Model):
             "image_url": self.image_url,
             "product_type": self.product_type,
             "category_id": self.category_id,
+            "is_active": self.is_active,
+            "sold_qty": self.sold_qty,
+            "reviews": reviews,
+            "avg_rating": avg_rating,
+            "seller_id": self.seller_id,
+            "created_at": self.created_at,
         }
 
     def upload_image(self):
         pass
+
+    def item_sold(self, qty):
+        self.sold_qty += qty
+
+    def reduce_item_qty(self, qty):
+        self.stock -= qty
+
+    def increase_item_qty(self, qty):
+        self.stock += qty
