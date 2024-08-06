@@ -15,6 +15,7 @@ class Districts(db.Model):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     subdistrict = relationship("Subdistricts", backref="districts")
+    addresses = relationship("Addresses", backref="district_addresses")
 
     def to_dict(self):
         return {

@@ -24,7 +24,7 @@ class Subdistricts(db.Model):
         foreign_keys="Shipments.destination_subdistrict",
         backref="destination_sub_district_rel",
     )
-    sellers = relationship("Sellers", backref="subdistrict")
+    addresses = relationship("Addresses", backref="subdistrict_addresses")
 
     def to_dict(self):
         return {

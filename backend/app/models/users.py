@@ -28,7 +28,8 @@ class Users(db.Model, UserMixin):
 
     user_seller_vouchers = relationship("UserSellerVouchers", backref="user")
     transactions = relationship("Transactions", backref="user")
-    addresses = relationship("Addresses", backref="user")
+    reviews = relationship("Reviews", backref="user_reviews")
+    addresses = relationship("Addresses", backref="user_addresses", lazy="joined")
 
     def __init__(self, username, password, fullname, email, phone_number):
         self.username = username
@@ -44,11 +45,14 @@ class Users(db.Model, UserMixin):
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
     def to_dict(self):
+        addresses = [address.to_dict() for address in self.addresses]
+
         return {
             "username": self.username,
             "fullname": self.fullname,
             "email": self.email,
             "phone_number": self.phone_number,
+            "addresses": addresses,
         }
 
     def delete_user(self):

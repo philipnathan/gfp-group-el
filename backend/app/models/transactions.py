@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from enum import Enum
 
 from ..db import db
@@ -40,3 +41,5 @@ class Transactions(db.Model):
     )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # reviews = relationship("Reviews", backref="transaction_reviews")

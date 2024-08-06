@@ -13,3 +13,4 @@ from .payment_methods import PaymentMethods
 from .payment_details import PaymentDetails
 from .transactions import Transactions
 from .addresses import Addresses
+from .reviews import Reviews

@@ -5,7 +5,6 @@ from sqlalchemy import (
     TEXT,
     SmallInteger,
     DateTime,
-    ForeignKey,
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -29,8 +28,7 @@ class Sellers(db.Model):
     phone_number = Column(VARCHAR(14), unique=True, nullable=False)
     store_name = Column(VARCHAR(30), unique=True, nullable=False)
     store_description = Column(TEXT, nullable=True)
-    store_address = Column(TEXT, nullable=True)
-    store_subdistrict = Column(Integer, ForeignKey("subdistricts.id"), nullable=True)
+
     store_image_url = Column(VARCHAR(255), nullable=True)
     is_active = Column(
         SmallInteger, default=Is_Active_Status.ACTIVE.value, nullable=False
@@ -38,10 +36,12 @@ class Sellers(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    shipping_options = relationship("ShippingOptions", backref="shipment_rel")
-    seller_vouchers = relationship("SellerVouchers", backref="seller_voucher_rel")
-    transactions = relationship("Transactions", backref="transaction_rel")
-    products = relationship("Products", backref="product_rel")
+    shipping_options = relationship("ShippingOptions", backref="seller_shippingoptions")
+    seller_vouchers = relationship("SellerVouchers", backref="seller_selllervouchers")
+    transactions = relationship("Transactions", backref="seller_transactions")
+    products = relationship("Products", backref="seller_products")
+    reviews = relationship("Reviews", backref="seller_reviews")
+    addresses = relationship("Addresses", backref="seller_addresses")
 
     def __init__(self, email, password, phone_number, store_name):
         self.email = email
@@ -56,14 +56,16 @@ class Sellers(db.Model):
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
     def to_dict(self):
+        all_addresses = self.addresses
+        addresses = [address.to_dict() for address in all_addresses]
+
         return {
             "id": self.id,
             "email": self.email,
             "phone_number": self.phone_number,
             "store_name": self.store_name,
             "store_description": self.store_description,
-            "store_address": self.store_address,
-            "store_subdistrict": self.store_subdistrict,
+            "addresses": addresses if addresses else [],
             "store_image_url": self.store_image_url,
         }
 

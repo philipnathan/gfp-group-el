@@ -11,6 +11,10 @@ from .controllers.users import users_blueprint
 from .controllers.sellers import sellers_blueprint
 from .controllers.locations import locations_blueprint
 from .controllers.products import products_blueprint
+from .controllers.reviews import reviews_blueprint
+from .controllers.transactions import transactions_blueprint
+from .controllers.addresses import addresses_blueprint
+from .controllers.seller_vouchers import seller_vouchers_blueprint
 
 load_dotenv()
 migrate = Migrate()
@@ -37,6 +41,10 @@ def create_app():
     app.register_blueprint(sellers_blueprint)
     app.register_blueprint(locations_blueprint)
     app.register_blueprint(products_blueprint)
+    app.register_blueprint(reviews_blueprint)
+    app.register_blueprint(transactions_blueprint)
+    app.register_blueprint(addresses_blueprint)
+    app.register_blueprint(seller_vouchers_blueprint)
 
     db.init_app(app)
     migrate.init_app(app, db)
