@@ -9,12 +9,8 @@ class ProductServicesUser:
 
     def get_product_by_category(self, category_id, request):
         try:
-            print("test1")
-
             page = request.args.get("page", 1, int)
             per_page = request.args.get("per_page", 10, int)
-
-            print("test2")
 
             products = self.repository.get_product_by_category(
                 category_id=category_id, page=page, per_page=per_page

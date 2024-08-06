@@ -17,8 +17,8 @@ from .reviews import Reviews
 
 
 class Product_Type(Enum):
-    STANDARD = 0
-    PREMIUM = 1
+    STANDARD = 1
+    PREMIUM = 2
 
 
 class Products(db.Model):
@@ -29,7 +29,10 @@ class Products(db.Model):
     description = Column(Text, nullable=True)
     price = Column(Integer, nullable=False)
     weight_kg = Column(Float(5, 2), nullable=False)
-    volume_m3 = Column(Float(5, 2), nullable=False)
+    volume_m3 = Column(Float(10, 5), nullable=False)
+    length_cm = Column(Integer, nullable=False)
+    width_cm = Column(Integer, nullable=False)
+    height_cm = Column(Integer, nullable=False)
     stock = Column(SmallInteger, nullable=False)
     image_url = Column(VARCHAR(255), nullable=True)
     product_type = Column(Integer, nullable=False)
@@ -48,23 +51,28 @@ class Products(db.Model):
         description,
         price,
         weight_kg,
-        volume_m3,
         stock,
         image_url,
         product_type,
         category_id,
         seller_id,
+        length_cm,
+        width_cm,
+        height_cm,
     ):
         self.name = name
         self.description = description
         self.price = price
         self.weight_kg = weight_kg
-        self.volume_m3 = volume_m3
         self.stock = stock
         self.image_url = image_url
         self.product_type = product_type
         self.category_id = category_id
         self.seller_id = seller_id
+        self.length_cm = length_cm
+        self.width_cm = width_cm
+        self.height_cm = height_cm
+        self.volume_m3 = self.length_cm * self.width_cm * self.height_cm / 1_000_000
 
     def to_dict(self):
         all_reviews = self.reviews

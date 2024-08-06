@@ -17,7 +17,7 @@ class ProductsServices:
         self.check_role_and_id(role, role_id)
 
         try:
-            all_data = get_data_and_validate(data, **self.all_data())
+            all_data = self.all_data(data)
 
             if not is_filled(**all_data):
                 raise ValueError("Please fill all required fields")
@@ -26,7 +26,7 @@ class ProductsServices:
 
             self.db.session.add(new_product)
             self.db.session.commit()
-            return {"product": new_product.to_dict()}, 201
+            return {"message": "Product created successfully"}, 201
 
         except (TypeError, ValueError) as e:
             self.db.session.rollback()
@@ -75,11 +75,16 @@ class ProductsServices:
         self.check_role_and_id(role, role_id)
 
         try:
-            all_data = get_data_and_validate(data, **self.all_data())
+            all_data = self.all_data(data)
 
-            product = self.repository.get_product_by_id(product_id, role_id)
+            product = self.repository.get_product_by_id(
+                product_id=product_id, role=role, role_id=role_id
+            )
             count_updated_key = 0
             key_updated = []
+
+            if product is None:
+                raise ValueError("Product not found")
 
             for key, data in all_data.items():
                 if data is None:
@@ -107,7 +112,9 @@ class ProductsServices:
         self.check_role_and_id(role, role_id)
 
         try:
-            product = self.repository.get_product_by_id(product_id, role_id)
+            product = self.repository.get_product_by_id(
+                role=role, product_id=product_id, role_id=role_id
+            )
 
             if product is None:
                 raise ValueError("Product not found")
@@ -131,15 +138,18 @@ class ProductsServices:
             return {"error": "Invalid seller"}, 400
         return True
 
-    def all_data(self):
-        return {
-            "name": str,
-            "description": str,
-            "image_url": str,
-            "price": int,
-            "stock": int,
-            "weight_kg": float,
-            "volume_m3": float,
-            "product_type": int,
-            "category_id": int,
-        }
+    def all_data(self, data):
+        return get_data_and_validate(
+            data,
+            name=str,
+            description=str,
+            price=int,
+            weight_kg=float,
+            stock=int,
+            image_url=str,
+            product_type=int,
+            category_id=int,
+            length_cm=int,
+            width_cm=int,
+            height_cm=int,
+        )
