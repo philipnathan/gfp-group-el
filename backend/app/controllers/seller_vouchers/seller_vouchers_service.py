@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .seller_vouchers_repository import SellerVouchersRepository
 from app.db import db
@@ -29,12 +29,19 @@ class SellerVouchersService:
             data["start_date"] = change_date(start_date, tz)
             data["expiry_date"] = change_date(expiry_date, tz)
 
+            # if data["start_date"] > data["expiry_date"] or data[
+            #     "start_date"
+            # ] < datetime.now(timezone.utc):
+            #     raise ValueError(
+            #         "Start date must be less than expiry date and greater than current date"
+            #     )
+
             voucher = self.repository.create_voucher(data)
 
             self.db.session.add(voucher)
             self.db.session.commit()
 
-            return {"voucher": "Voucher created successfully"}, 201
+            return {"message": "Voucher created successfully"}, 201
         except ValueError as e:
             self.db.session.rollback()
             return {"error": str(e)}, 400
@@ -114,7 +121,7 @@ class SellerVouchersService:
             self.db.session.commit()
 
             return {
-                "voucher": "Voucher updated successfully",
+                "message": "Voucher updated successfully",
                 "key_updated": key_updated,
             }, 200
 
@@ -142,7 +149,7 @@ class SellerVouchersService:
             voucher.delete_voucher()
             self.db.session.commit()
 
-            return {"voucher": "Voucher deleted successfully"}, 200
+            return {"message": "Voucher deleted successfully"}, 200
 
         except ValueError as e:
             return {"error": str(e)}, 400
