@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, SmallInteger, event
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from enum import Enum
+from datetime import datetime
+import pytz
 
 from ..db import db
 
@@ -39,7 +41,17 @@ class Transactions(db.Model):
         default=transaction_status.WAITING_FOR_PAYMENT.value,
         nullable=False,
     )
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     # reviews = relationship("Reviews", backref="transaction_reviews")
+
+
+@event.listens_for(Transactions, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Transactions, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)

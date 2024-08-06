@@ -1,15 +1,9 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    VARCHAR,
-    TEXT,
-    SmallInteger,
-    DateTime,
-)
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, VARCHAR, TEXT, SmallInteger, DateTime, event
 from sqlalchemy.orm import relationship
 import bcrypt
 from enum import Enum
+from datetime import datetime
+import pytz
 
 from ..db import db
 
@@ -33,8 +27,8 @@ class Sellers(db.Model):
     is_active = Column(
         SmallInteger, default=Is_Active_Status.ACTIVE.value, nullable=False
     )
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     shipping_options = relationship("ShippingOptions", backref="seller_shippingoptions")
     seller_vouchers = relationship("SellerVouchers", backref="seller_selllervouchers")
@@ -71,3 +65,13 @@ class Sellers(db.Model):
 
     def delete_seller(self):
         self.is_active = Is_Active_Status.INACTIVE.value
+
+
+@event.listens_for(Sellers, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Sellers, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)

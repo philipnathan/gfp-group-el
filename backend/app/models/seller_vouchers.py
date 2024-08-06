@@ -40,7 +40,7 @@ class SellerVouchers(db.Model):
     expiry_date = Column(DateTime(timezone=True), nullable=False)
     is_active = Column(Integer, default=Is_Active_Status.ACTIVE.value, nullable=False)
     created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     seller_voucher_id = relationship("UserSellerVouchers", backref="seller_voucher")
 

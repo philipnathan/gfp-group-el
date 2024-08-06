@@ -1,6 +1,15 @@
-from sqlalchemy import Column, Integer, DateTime, SmallInteger, ForeignKey, VARCHAR
-from sqlalchemy.sql import func
+from sqlalchemy import (
+    Column,
+    Integer,
+    DateTime,
+    SmallInteger,
+    ForeignKey,
+    VARCHAR,
+    event,
+)
 from enum import Enum
+from datetime import datetime
+import pytz
 
 from ..db import db
 
@@ -23,4 +32,9 @@ class PaymentDetails(db.Model):
     payment_status = Column(Integer, nullable=True)
     image_url = Column(VARCHAR(255), nullable=True)
     reference_number = Column(VARCHAR(50), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, nullable=False)
+
+
+@event.listens_for(PaymentDetails, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)

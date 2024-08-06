@@ -6,9 +6,11 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     SmallInteger,
+    event,
 )
-from sqlalchemy.sql import func
 from enum import Enum
+from datetime import datetime
+import pytz
 
 from ..db import db
 
@@ -36,8 +38,8 @@ class Addresses(db.Model):
     is_active = Column(
         SmallInteger, default=Is_Active_Status.ACTIVE.value, nullable=False
     )
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     def __init__(self, data):
         self.receiver_name = data["receiver_name"]
@@ -69,3 +71,13 @@ class Addresses(db.Model):
 
     def delete_address(self):
         self.is_active = Is_Active_Status.INACTIVE.value
+
+
+@event.listens_for(Addresses, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Addresses, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)

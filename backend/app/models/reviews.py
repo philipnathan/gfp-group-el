@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, SmallInteger, Text, DateTime, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, SmallInteger, Text, DateTime, ForeignKey, event
+from datetime import datetime
+import pytz
 
 from app.db import db
 
@@ -15,7 +16,7 @@ class Reviews(db.Model):
     review = Column(Text, nullable=True)
     # transaction_id = (
     #     Column(Integer, ForeignKey("transactions.id"), nullable=False))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, nullable=False)
 
     def to_dict(self):
         return {
@@ -27,3 +28,13 @@ class Reviews(db.Model):
             "rating": self.rating,
             "review": self.review,
         }
+
+
+@event.listens_for(Reviews, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Reviews, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)

@@ -1,4 +1,3 @@
-from sqlalchemy.sql import func
 from enum import Enum
 from sqlalchemy import (
     Integer,
@@ -9,8 +8,12 @@ from sqlalchemy import (
     ForeignKey,
     DateTime,
     Float,
+    event,
 )
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from datetime import datetime
+import pytz
 
 from app.db import db
 from .reviews import Reviews
@@ -40,8 +43,8 @@ class Products(db.Model):
     seller_id = Column(Integer, ForeignKey("sellers.id"), nullable=False)
     is_active = Column(SmallInteger, default=1, nullable=False)
     sold_qty = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     reviews = relationship("Reviews", backref="product_reviews")
 
@@ -114,3 +117,13 @@ class Products(db.Model):
 
     def increase_item_qty(self, qty):
         self.stock += qty
+
+
+@event.listens_for(Products, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Products, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)
