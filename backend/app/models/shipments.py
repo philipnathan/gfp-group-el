@@ -26,7 +26,7 @@ class Shipments(db.Model):
     service_name = Column(VARCHAR(10), nullable=False)
     estimated_time = Column(SmallInteger, nullable=False)
     cost_per_kilo = Column(Integer, nullable=False)
-    min_cost = Column(SmallInteger, nullable=False)
+    cost_per_m3 = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
 
