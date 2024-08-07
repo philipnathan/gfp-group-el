@@ -19,12 +19,5 @@ class SellersRepository:
     def get_seller_by_id(self, seller_id):
         return self.seller.query.filter_by(id=seller_id).first()
 
-    def seller_register(self, email, phone_number, store_name, password):
-        new_seller = self.seller(
-            email=email,
-            phone_number=phone_number,
-            store_name=store_name,
-            password=password,
-        )
-
-        return new_seller
+    def seller_register(self, new_seller_data):
+        return self.seller(**new_seller_data)

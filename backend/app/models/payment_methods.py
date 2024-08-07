@@ -1,5 +1,6 @@
-from sqlalchemy import Column, VARCHAR, SmallInteger, Integer, DateTime
-from sqlalchemy.sql import func
+from sqlalchemy import Column, VARCHAR, SmallInteger, Integer, DateTime, event
+from datetime import datetime
+import pytz
 
 
 from ..db import db
@@ -13,5 +14,15 @@ class PaymentMethods(db.Model):
     payment_type = Column(VARCHAR(30), nullable=False)
     min_transaction = Column(Integer, nullable=False)
     max_transaction = Column(Integer, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
+
+
+@event.listens_for(PaymentMethods, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(PaymentMethods, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)

@@ -1,9 +1,11 @@
 import bcrypt
 from enum import Enum
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, VARCHAR, DateTime
+from sqlalchemy import Column, Integer, VARCHAR, DateTime, event
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from datetime import datetime
+import pytz
 
 from ..db import db
 
@@ -23,12 +25,13 @@ class Users(db.Model, UserMixin):
     password = Column(VARCHAR(255), nullable=False)
     phone_number = Column(VARCHAR(14), unique=True, nullable=False)
     is_active = Column(Integer, default=Is_Active_Status.ACTIVE.value, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=True)
 
     user_seller_vouchers = relationship("UserSellerVouchers", backref="user")
     transactions = relationship("Transactions", backref="user")
-    addresses = relationship("Addresses", backref="user")
+    reviews = relationship("Reviews", backref="user_reviews")
+    addresses = relationship("Addresses", backref="user_addresses", lazy="joined")
 
     def __init__(self, username, password, fullname, email, phone_number):
         self.username = username
@@ -44,12 +47,25 @@ class Users(db.Model, UserMixin):
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
     def to_dict(self):
+        addresses = [address.to_dict() for address in self.addresses]
+
         return {
             "username": self.username,
             "fullname": self.fullname,
             "email": self.email,
             "phone_number": self.phone_number,
+            "addresses": addresses,
         }
 
     def delete_user(self):
         self.is_active = Is_Active_Status.INACTIVE.value
+
+
+@event.listens_for(Users, "before_insert")
+def set_created_at(mapper, connection, target):
+    target.created_at = datetime.now(pytz.UTC)
+
+
+@event.listens_for(Users, "before_update")
+def set_updated_at(mapper, connection, target):
+    target.updated_at = datetime.now(pytz.UTC)
