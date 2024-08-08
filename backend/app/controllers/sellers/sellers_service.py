@@ -131,7 +131,7 @@ class SellersServices:
 
                 # check if store_subdistrict is exist
                 if key == "store_subdistrict" and data is not None:
-                    if self.location.get_location_by_id(data) is None:
+                    if self.location.get_subdistricts_by_id(data) is None:
                         raise ValueError("Store subdistrict not found")
 
                 # update if data is not None and seller has that key
