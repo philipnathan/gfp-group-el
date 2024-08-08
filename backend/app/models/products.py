@@ -106,6 +106,18 @@ class Products(db.Model):
             "created_at": self.created_at,
         }
 
+    def to_cart(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "stock": self.stock,
+            "image_url": self.image_url,
+            "category_id": self.category_id,
+            "is_active": self.is_active,
+            "seller_id": self.seller_id,
+        }
+
     def upload_image(self):
         pass
 
