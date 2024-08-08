@@ -7,16 +7,16 @@ from flasgger import Swagger
 from flask_cors import CORS
 
 from .db import db
+from .db import mongo
 from .controllers.users import users_blueprint
 from .controllers.sellers import sellers_blueprint
 from .controllers.locations import locations_blueprint
 from .controllers.products import products_blueprint
 from .controllers.reviews import reviews_blueprint
-from .controllers.transactions import transactions_blueprint
 from .controllers.addresses import addresses_blueprint
 from .controllers.seller_vouchers import seller_vouchers_blueprint
 from .controllers.user_seller_vouchers import user_seller_vouchers_blueprint
-from .controllers.shipments import shipments_blueprint
+from .controllers.carts import carts_blueprint
 
 load_dotenv()
 migrate = Migrate()
@@ -38,19 +38,20 @@ def create_app():
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+    app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
     app.register_blueprint(users_blueprint)
     app.register_blueprint(sellers_blueprint)
     app.register_blueprint(locations_blueprint)
     app.register_blueprint(products_blueprint)
     app.register_blueprint(reviews_blueprint)
-    app.register_blueprint(transactions_blueprint)
     app.register_blueprint(addresses_blueprint)
     app.register_blueprint(seller_vouchers_blueprint)
     app.register_blueprint(user_seller_vouchers_blueprint)
-    app.register_blueprint(shipments_blueprint)
+    app.register_blueprint(carts_blueprint)
 
     db.init_app(app)
+    mongo.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     Swagger(app)
