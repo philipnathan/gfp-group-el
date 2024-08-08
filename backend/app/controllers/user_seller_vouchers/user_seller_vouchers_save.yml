@@ -12,7 +12,7 @@ parameters:
       description: JWT Token
       required: true
     - in: path
-      name: voucher_id
+      name: seller_voucher_id
       required: true
       schema:
           type: integer

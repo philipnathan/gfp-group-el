@@ -19,31 +19,27 @@ class UserSellerVouchersService:
             seller_voucher_repository or SellerVouchersRepository()
         )
 
-    def user_save_voucher(self, identity, voucher_id):
+    def user_save_voucher(self, identity, seller_voucher_id):
         try:
+            self.check_user(identity=identity)
+
             user_id = identity.get("id")
 
-            if self.user_repository.get_user_by_id(user_id) is None:
-                raise ValueError("User not found")
-
-            if identity.get("role") != "user":
-                raise ValueError("Unauthorized")
-
             if self.repository.get_voucher_by_id_and_user_id(
-                user_id=user_id, voucher_id=voucher_id
+                user_id=user_id, seller_voucher_id=seller_voucher_id
             ):
-                raise ValueError("Voucher already saved")
+                raise ValueError("Voucher already claimed")
 
             if (
                 self.seller_voucher_repository.get_voucher_only_by_voucher_id(
-                    voucher_id=voucher_id
+                    voucher_id=seller_voucher_id
                 )
                 is None
             ):
                 raise ValueError("Voucher not found")
 
             voucher = self.repository.user_save_voucher(
-                user_id=user_id, voucher_id=voucher_id
+                user_id=user_id, voucher_id=seller_voucher_id
             )
 
             self.db.session.add(voucher)
@@ -57,18 +53,21 @@ class UserSellerVouchersService:
             self.db.session.rollback()
             return {"error": str(e)}, 500
 
-    def user_list_vouchers(self, identity):
+    def user_list_vouchers(self, identity, req):
         try:
-            if self.user_repository.get_user_by_id(identity.get("id")) is None:
-                raise ValueError("User not found")
-
-            if identity.get("role") != "user":
-                raise ValueError("Unauthorized")
+            self.check_user(identity=identity)
 
             user_id = identity.get("id")
-            vouchers = self.repository.get_vouchers_by_user_id(user_id=user_id)
+            seller_ids = req.get("seller_ids", None)
 
-            if vouchers is None:
+            if not seller_ids:
+                vouchers = self.repository.get_vouchers_by_user_id(user_id=user_id)
+            else:
+                vouchers = self.repository.get_voucher_by_seller_ids(
+                    user_id=user_id, seller_ids=seller_ids
+                )
+
+            if not vouchers:
                 raise ValueError("No vouchers found")
 
             return [voucher.to_dict() for voucher in vouchers], 200
@@ -80,18 +79,14 @@ class UserSellerVouchersService:
 
     def user_used_voucher(self, identity, user_seller_voucher_id):
         try:
-            if self.user_repository.get_user_by_id(identity.get("id")) is None:
-                raise ValueError("User not found")
-
-            if identity.get("role") != "user":
-                raise ValueError("Unauthorized")
+            self.check_user(identity=identity)
 
             user_id = identity.get("id")
-            voucher = self.repository.get_voucher_by_id_and_user_id(
+            voucher = self.repository.get_voucher_by_id(
                 user_seller_voucher_id=user_seller_voucher_id, user_id=user_id
             )
 
-            if voucher is None:
+            if not voucher:
                 raise ValueError("Voucher not found")
             if voucher.is_used == 1:
                 raise ValueError("Voucher already used")
@@ -106,3 +101,13 @@ class UserSellerVouchersService:
         except Exception as e:
             self.db.session.rollback()
             return {"error": str(e)}, 500
+
+    def check_user(self, identity):
+        user_id = identity.get("id")
+        role = identity.get("role")
+
+        if role != "user":
+            raise ValueError("Unauthorized")
+
+        if self.user_repository.get_user_by_id(user_id) is None:
+            raise ValueError("User not found")

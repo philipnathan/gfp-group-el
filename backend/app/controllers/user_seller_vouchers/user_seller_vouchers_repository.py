@@ -14,20 +14,41 @@ class UserSellerVouchersRepository:
         return self.voucher(user_id=user_id, seller_voucher_id=voucher_id)
 
     def get_vouchers_by_user_id(self, user_id):
+        return self.join_query().filter(self.voucher.user_id == user_id).all()
 
-        today = datetime.now(timezone.utc)
-        query = (
-            self.voucher.query.join(
-                SellerVouchers, self.voucher.seller_voucher_id == SellerVouchers.id
+    def get_voucher_by_id_and_user_id(self, user_id, seller_voucher_id):
+        return (
+            self.join_query()
+            .filter(
+                self.voucher.user_id == user_id,
+                self.voucher.seller_voucher_id == seller_voucher_id,
             )
-            .filter(self.voucher.user_id == user_id)
-            .filter(SellerVouchers.expiry_date >= today)
+            .first()
+        )
+
+    def get_voucher_by_seller_ids(self, user_id, seller_ids):
+        return (
+            self.join_query()
+            .filter(
+                self.voucher.user_id == user_id,
+                SellerVouchers.seller_id.in_(seller_ids),
+            )
             .all()
         )
 
-        return query
+    def get_voucher_by_id(self, user_seller_voucher_id, user_id):
+        return (
+            self.join_query()
+            .filter(
+                self.voucher.id == user_seller_voucher_id,
+                self.voucher.user_id == user_id,
+            )
+            .first()
+        )
 
-    def get_voucher_by_id_and_user_id(self, user_id, user_seller_voucher_id):
-        return self.voucher.query.filter_by(
-            user_id=user_id, id=user_seller_voucher_id
-        ).first()
+    def join_query(self):
+        today = datetime.now(timezone.utc)
+
+        return self.voucher.query.join(
+            SellerVouchers, self.voucher.seller_voucher_id == SellerVouchers.id
+        ).filter(SellerVouchers.expiry_date >= today)
