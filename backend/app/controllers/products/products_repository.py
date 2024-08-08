@@ -64,5 +64,7 @@ class ProductsRepository:
             query = query.order_by(self.product.price.desc())
         if date == "newest":
             query = query.order_by(self.product.created_at.desc())
+        if date == "latest":
+            query = query.order_by(self.product.created_at.asc())
 
         return query.paginate(page=page, per_page=per_page)
