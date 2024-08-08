@@ -46,6 +46,7 @@ export default function FilterSearch({ onFilterChange }: FilterSearchProps) {
     async function fetchDistricts() {
       try {
         const res = await fetch('http://127.0.0.1:5000/api/locations/districts');
+        console.log(res)
         if (!res.ok) {
           throw new Error('Failed to fetch districts');
         }
