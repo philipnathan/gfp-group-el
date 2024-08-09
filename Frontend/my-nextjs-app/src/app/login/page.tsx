@@ -27,39 +27,17 @@ import {
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(50, { message: "Must be 50 or fewer characters long" }),
   email: z.string().email({ message: "Invalid email address" }),
-  password: z
-    .string()
-    .regex(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/, {
-      message:
-        "Password must contain one digit from 1 to 9, one lowercase letter, one uppercase letter, one special character, no space, and it must be 8-16 characters long.",
-    }),
-  phone_number: z
-    .string()
-    .max(14, { message: "Your phone number cannot be more than 14 digit" })
-    .regex(/^(\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/, {
-      message: "Only numbers may be inputted in this field",
-    }),
-  fullname: z
-    .string()
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(50, { message: "Must be 50 or fewer characters long" }),
+  password: z.string(),
 });
 
-export default function RegisterForm() {
+export default function LoginForm() {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
-      phone_number: "",
-      fullname: "",
     },
   });
   function toastMessage(message: string, status: number) {
@@ -86,7 +64,7 @@ export default function RegisterForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const jsonValues = JSON.stringify(values);
-      const res = await instance.post("users/register", jsonValues);
+      const res = await instance.post("users/login", jsonValues);
       const { message } = res.data;
       toastMessage(message, res.status);
     } catch (error: any) {
@@ -141,7 +119,7 @@ export default function RegisterForm() {
           </Button>
           <div className="mt-4 text-center text-sm">
             Doesn't have an account?{" "}
-            <Link href="#" className="underline">
+            <Link href="/register" className="underline">
               Register
             </Link>
           </div>
