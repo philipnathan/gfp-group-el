@@ -23,7 +23,6 @@ class Districts(db.Model):
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
 
-    subdistrict = relationship("Subdistricts", backref="districts")
     addresses = relationship("Addresses", backref="district_addresses")
 
     def to_dict(self):
