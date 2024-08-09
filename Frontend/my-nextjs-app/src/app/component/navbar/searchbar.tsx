@@ -2,7 +2,6 @@
 import React, { FormEvent, useState } from "react";
 import FilterSearch from "./filter";
 
-
 interface SearchNavProps {
   isFilterMenuOpen: boolean;
   toggleFilterMenu: () => void;
