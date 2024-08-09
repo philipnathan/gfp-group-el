@@ -1,7 +1,7 @@
 tags:
     - Shipping Options
-summary: Create new shipping option for seller
-description: Create new shipping option for seller
+summary: Update existed shipping option for seller
+description: Update existed shipping option for seller
 parameters:
     - in: header
       name: Authorization
@@ -15,17 +15,20 @@ parameters:
       name: Shipping Option
       required: true
       schema:
-          type: object
+          tpye: object
           properties:
-              jne:
-                  type: integer
-                  example: 1
-              tiki:
-                  type: integer
-                  example: 1
-              pos:
-                  type: integer
-                  example: 1
+              shipment_status:
+                  type: object
+                  properties:
+                      jne:
+                          type: integer
+                          example: 1
+                      tiki:
+                          type: integer
+                          example: 1
+                      pos:
+                          type: integer
+                          example: 1
 responses:
     200:
         description: Shipping option created successfully

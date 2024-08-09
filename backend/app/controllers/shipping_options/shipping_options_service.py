@@ -11,7 +11,7 @@ class ShippingOptionsService:
         self.repository = repository or ShippingOptionsRepository()
         self.shipment_repository = shipment_repository or ShipmentsRepository()
 
-    def create_update_option(self, data, identity):
+    def update_option(self, data, identity):
         try:
             role = identity.get("role")
             role_id = identity.get("id")
