@@ -19,14 +19,6 @@ class Shipments(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     vendor_name = Column(VARCHAR(30), nullable=False)
-    # arrival_subdistrict = Column(Integer, ForeignKey("subdistricts.id"), nullable=False)
-    # destination_subdistrict = Column(
-    #     Integer, ForeignKey("subdistricts.id"), nullable=False
-    # )
-    service_name = Column(VARCHAR(10), nullable=False)
-    estimated_time = Column(SmallInteger, nullable=False)
-    cost_per_kilo = Column(Integer, nullable=False)
-    cost_per_m3 = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
 

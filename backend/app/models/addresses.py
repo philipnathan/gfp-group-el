@@ -30,7 +30,6 @@ class Addresses(db.Model):
     address_line = Column(TEXT, nullable=False)
     province_id = Column(SmallInteger, ForeignKey("provinces.id"), nullable=False)
     district_id = Column(Integer, ForeignKey("districts.id"), nullable=False)
-    # subdistrict_id = Column(Integer, ForeignKey("subdistricts.id"), nullable=False)
     rt_rw = Column(VARCHAR(7), nullable=True)
     postal_code = Column(VARCHAR(5), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
