@@ -17,6 +17,8 @@ from .controllers.addresses import addresses_blueprint
 from .controllers.seller_vouchers import seller_vouchers_blueprint
 from .controllers.user_seller_vouchers import user_seller_vouchers_blueprint
 from .controllers.carts import carts_blueprint
+from .controllers.shipping_options import shipping_options_blueprint
+from .controllers.shipments import shipments_blueprint
 
 load_dotenv()
 migrate = Migrate()
@@ -49,6 +51,8 @@ def create_app():
     app.register_blueprint(seller_vouchers_blueprint)
     app.register_blueprint(user_seller_vouchers_blueprint)
     app.register_blueprint(carts_blueprint)
+    app.register_blueprint(shipping_options_blueprint)
+    app.register_blueprint(shipments_blueprint)
 
     db.init_app(app)
     mongo.init_app(app)
