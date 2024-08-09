@@ -23,7 +23,6 @@ class PaymentDetails(db.Model):
     __tablename__ = "payment_details"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # transaction_id = Column(Integer, nullable=False)
     payment_method = Column(
         SmallInteger, ForeignKey("payment_methods.id"), nullable=False
     )

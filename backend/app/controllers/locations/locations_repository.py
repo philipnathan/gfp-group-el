@@ -1,5 +1,7 @@
 from app.db import db
-from app.models import Provinces, Districts, Subdistricts
+from app.models import Provinces, Districts, Subdistricts, Shipments
+
+from sqlalchemy import or_
 
 
 class LocationRepository:
@@ -16,10 +18,32 @@ class LocationRepository:
         return self.province.query.all()
 
     def get_districts(self):
-        return self.district.query.all()
+        query = (
+            self.district.query.join(
+                Subdistricts, Subdistricts.district_id == self.district.id
+            )
+            .join(
+                Shipments,
+                or_(
+                    Shipments.arrival_subdistrict == self.subdistrict.id,
+                    Shipments.destination_subdistrict == self.subdistrict.id,
+                ),
+            )
+            .all()
+        )
+
+        return query
 
     def get_subdistricts(self):
-        return self.subdistrict.query.all()
+        query = self.subdistrict.query.join(
+            Shipments,
+            or_(
+                Shipments.arrival_subdistrict == self.subdistrict.id,
+                Shipments.destination_subdistrict == self.subdistrict.id,
+            ),
+        ).all()
+
+        return query
 
     def get_provinces_by_id(self, province_id):
         return self.province.query.filter_by(id=province_id).first()

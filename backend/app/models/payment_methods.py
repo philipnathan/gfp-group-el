@@ -10,7 +10,7 @@ class PaymentMethods(db.Model):
     __tablename__ = "payment_methods"
 
     id = Column(SmallInteger, primary_key=True, autoincrement=True)
-    vendor_name = Column(VARCHAR(20), nullable=False)
+    vendor_name = Column(VARCHAR(30), nullable=False)
     payment_type = Column(VARCHAR(30), nullable=False)
     min_transaction = Column(Integer, nullable=False)
     max_transaction = Column(Integer, nullable=False)
