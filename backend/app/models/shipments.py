@@ -21,3 +21,9 @@ class Shipments(db.Model):
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.now(pytz.UTC))
 
     shipping_options = relationship("ShippingOptions", backref="shipment")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vendor_name": self.vendor_name,
+        }
