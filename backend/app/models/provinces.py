@@ -1,4 +1,4 @@
-from sqlalchemy import Column, SmallInteger, VARCHAR, DateTime, event
+from sqlalchemy import Column, SmallInteger, VARCHAR, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import pytz
@@ -14,7 +14,7 @@ class Provinces(db.Model):
     created_at = Column(DateTime, default=datetime.now(pytz.UTC), nullable=False)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.now(pytz.UTC))
 
-    district = relationship("Districts", backref="districts")
+    district = relationship("Districts", backref="province_districts")
     addresses = relationship("Addresses", backref="province_addresses")
 
     def provinces_to_dict(self):

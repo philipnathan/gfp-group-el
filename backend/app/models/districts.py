@@ -5,7 +5,6 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
-    event,
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -29,5 +28,6 @@ class Districts(db.Model):
         return {
             "id": self.id,
             "province_id": self.province_id,
+            "province_name": self.province_districts.province,
             "district": self.district,
         }
